@@ -1,15 +1,23 @@
 import { Comparable } from './Comparable';
+import { Weapon } from './Weapon';
 
 let id = 0;
 let counter = 0;
 
-export abstract class Item implements Comparable<Item> {
+export abstract class Item extends Weapon implements Comparable<Item> {
 	public numberOfItems: number;
 	public value: number;
 	public name: string;
 	public weight: number;
 
-	constructor(name: string, value: number, weight: number) {
+	constructor(
+		name: string,
+		baseDamage: number,
+		baseDurability: number,
+		value: number,
+		weight: number
+	) {
+		super(name, baseDamage, baseDurability, value, weight);
 		this.name = name;
 		this.value = value;
 		this.weight = weight;
@@ -21,7 +29,9 @@ export abstract class Item implements Comparable<Item> {
 		return counter;
 	}
 
-	public use(): void {}
+	public use(): string {
+		return `You use ${this.name}, dealing ${this.baseDamage} points of damage.`;
+	}
 
 	public compareTo(other: Item): number {
 		if (this.value > other.value) {
