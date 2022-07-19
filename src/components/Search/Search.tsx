@@ -4,41 +4,53 @@ import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 
 import styles from './Search.module.scss';
+import { Row } from '../Table';
 
 interface SearchProps {
-  store?: {};
-  updateStore?: (val) => void;
+	store?: Row[];
+	initialStore?: Row[];
+	updateStore?: (val: Row[]) => void;
 }
 
-// OR
+export function Search({ store, updateStore, initialStore }: SearchProps) {
+	const [searchedValue, setSearchedValue] = useState<string>('');
 
-//interface SearchProps {
-//  selected?: {};
-//  updateSelected?: (val) => void;
-//}
+	const onChange = (value) => {
+		if (!value) {
+			updateStore && updateStore(initialStore);
+			setSearchedValue('');
+			return;
+		}
 
-// OR store can be global
+		setSearchedValue(value);
 
-export function Search(props: SearchProps) {
-  const [searchedValue, setSearchedValue] = useState<string>('');
+		const searchByCountry = (row: Row) =>
+			row.country.toLowerCase().includes(value.toLowerCase());
+		const searchByName = (row: Row) =>
+			row.name.toLowerCase().includes(value.toLowerCase());
+		const searchByUserName = (row: Row) =>
+			row.username.toLowerCase().includes(value.toLowerCase());
 
-  const onChange = (value) => {
-    console.log(value); // for debugging
-    setSearchedValue(value);
-  }
+		const updatedStore = [...store].filter(
+			(row) =>
+				searchByCountry(row) || searchByName(row) || searchByUserName(row)
+		);
 
-  return (
-    <OutlinedInput
-      className={styles.input}
-      placeholder="Search by country/name/username"
-      value={searchedValue}
-      type="search"
-      onChange={(e) => onChange(e.target.value)}
-      startAdornment={
-        <InputAdornment position="start">
-          <SearchIcon />
-        </InputAdornment>
-      }
-    />
-  );
+		updateStore && updateStore(updatedStore);
+	};
+
+	return (
+		<OutlinedInput
+			className={styles.input}
+			placeholder="Search by country/name/username"
+			value={searchedValue}
+			type="search"
+			onChange={(e) => onChange(e.target.value)}
+			startAdornment={
+				<InputAdornment position="start">
+					<SearchIcon />
+				</InputAdornment>
+			}
+		/>
+	);
 }

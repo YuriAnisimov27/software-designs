@@ -7,7 +7,7 @@ export interface IDataConverter {
 	images: Image[];
 }
 
-function compare(a: Payment, b: Payment) {
+function compare(a: Payment, b: Payment): number {
 	if (new Date(a.date) > new Date(b.date)) {
 		return -1;
 	}

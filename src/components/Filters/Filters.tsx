@@ -2,20 +2,13 @@ import { useState } from 'react';
 import Checkbox from '@mui/material/Checkbox';
 
 import styles from './Filters.module.scss';
+import { Row } from '../Table';
 
 interface FiltersProps {
-	store?: {};
-	updateStore?: (val) => void;
+	store?: Row[];
+	initialStore?: Row[];
+	updateStore?: (val: Row[]) => void;
 }
-
-// OR
-
-//interface FiltersProps {
-//  selected?: {};
-//  updateSelected?: (val) => void;
-//}
-
-// OR store can be global
 
 const OPTIONS = [
 	{
@@ -26,12 +19,10 @@ const OPTIONS = [
 	},
 ];
 
-export function Filters(props: FiltersProps) {
+export function Filters({ store, updateStore, initialStore }: FiltersProps) {
 	const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
 
 	const onChange = ({ title }) => {
-		console.log(title); // for debugging
-
 		let updatedFilters;
 		if (selectedFilter.find((filter) => filter === title)) {
 			updatedFilters = selectedFilter.filter((filter) => filter !== title);
@@ -40,6 +31,25 @@ export function Filters(props: FiltersProps) {
 		}
 
 		setSelectedFilter(updatedFilters);
+
+		let updatedStore = [];
+
+		if (updatedFilters.includes('Without posts')) {
+			updatedStore = [...initialStore].filter((row) => row.posts === 0);
+		}
+
+		if (updatedFilters.includes('More than 100 posts')) {
+			updatedStore = [
+				...updatedStore,
+				...initialStore.filter((row) => row.posts > 100),
+			];
+		}
+
+		if (!updatedFilters.length) {
+			updatedStore = [...initialStore];
+		}
+
+		updateStore && updateStore(updatedStore);
 	};
 
 	return (

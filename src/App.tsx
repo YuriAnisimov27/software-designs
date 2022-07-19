@@ -16,14 +16,14 @@ import { dataConverter } from './utils/dataConverter';
 const mockedData: Row[] = rows.data;
 
 function App() {
-	const [data, setData] = useState<Row[]>(undefined);
+	const [data, setData] = useState<Row[]>(mockedData);
+	const initialStore = [...mockedData];
 
 	useEffect(() => {
 		// fetching data from API
 		Promise.all([getImages(), getUsers(), getAccounts()]).then(
 			([images, users, accounts]: [Image[], User[], Account[]]) => {
 				const newData = dataConverter(images, users, accounts);
-				console.log(newData);
 				setData(newData);
 			}
 		);
@@ -34,12 +34,20 @@ function App() {
 			<div className="App">
 				<div className={styles.container}>
 					<div className={styles.sortFilterContainer}>
-						<Filters />
-						<Sort />
+						<Filters
+							store={data}
+							updateStore={setData}
+							initialStore={initialStore}
+						/>
+						<Sort store={data} updateStore={setData} />
 					</div>
-					<Search />
+					<Search
+						store={data}
+						updateStore={setData}
+						initialStore={initialStore}
+					/>
 				</div>
-				<Table rows={data || mockedData} />
+				<Table rows={data} />
 			</div>
 		</StyledEngineProvider>
 	);
